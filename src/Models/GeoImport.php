@@ -2,10 +2,11 @@
 
 namespace GIS\GeoNewsParser\Models;
 
+use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 
-class GeoImport extends Model
+class GeoImport extends Model implements GeoImportInterface
 {
     use HasUlids;
 
