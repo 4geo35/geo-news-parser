@@ -4,6 +4,8 @@ namespace GIS\GeoNewsParser;
 use GIS\GeoNewsParser\Models\GeoImport;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
+use GIS\GeoNewsParser\Livewire\Admin\Imports\ListWire as ImportListWire;
 
 class GeoNewsParserServiceProvider extends ServiceProvider
 {
@@ -25,6 +27,12 @@ class GeoNewsParserServiceProvider extends ServiceProvider
 
     protected function addLivewireComponents(): void
     {
+        // Import
+        $component = config("geo-news-parser.customImportListComponent");
+        Livewire::component(
+            "gnp-import-list",
+            $component ?? ImportListWire::class
+        );
     }
 
     protected function initFacades(): void

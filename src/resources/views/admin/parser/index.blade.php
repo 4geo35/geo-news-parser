@@ -3,5 +3,6 @@
     <x-slot name="pageTitle">Загрузка новостей</x-slot>
 
     <div class="space-y-indent-half">
+        <livewire:gnp-import-list />
     </div>
 </x-admin-layout>
