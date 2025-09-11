@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use GIS\GeoNewsParser\Http\Controllers\Admin\ParserController;
 
 Route::middleware(["web", "auth", "app-management"])
     ->prefix("admin")
@@ -9,8 +10,7 @@ Route::middleware(["web", "auth", "app-management"])
         Route::prefix("geo-news-parser")
             ->as("geo-news-parser.")
             ->group(function () {
-                Route::get("/", function () {
-                    return "news-parser";
-                });
+                $aminController = config("geo-news-parser.customAdminParserController") ?? ParserController::class;
+                Route::get("/", [$aminController, "index"])->name("index");
             });
     });
