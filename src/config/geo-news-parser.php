@@ -2,7 +2,7 @@
 
 return [
     // Admin
-    "customAdminParserController" => null,
+    "customAdminImportController" => null,
     "customGeoImportModel" => null,
 
     "customImportListComponent" => null,

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string("paginator")->nullable();
             $table->unsignedInteger("first_page")->nullable();
             $table->unsignedInteger("last_page")->nullable();
+            $table->dateTime("clear_all_at")->nullable();
             $table->timestamps();
         });
     }

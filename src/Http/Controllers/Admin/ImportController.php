@@ -7,12 +7,12 @@ use GIS\GeoNewsParser\Models\GeoImport;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-class ParserController extends Controller
+class ImportController extends Controller
 {
     public function index(): View
     {
         $importModelClass = config("geo-news-parser.customGeoImportModel") ?? GeoImport::class;
         Gate::authorize("viewAny", $importModelClass);
-        return view("gnp::admin.parser.index");
+        return view("gnp::admin.imports.index");
     }
 }
