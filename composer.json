@@ -1,0 +1,28 @@
+{
+    "name": "4geo35/geo-news-parser",
+    "description": "Parse an save news from 4geo sites",
+    "minimum-stability": "dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vlaimir",
+            "email": "aweram-team@yandex.ru"
+        }
+    ],
+    "require": {
+        "4geo35/tailwindcss-theme": "@dev",
+        "4geo35/user-management": "@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "GIS\\GeoNewsParser\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GIS\\GeoNewsParser\\GeoNewsParserServiceProvider"
+            ]
+        }
+    }
+}
