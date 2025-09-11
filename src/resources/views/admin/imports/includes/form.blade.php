@@ -1,4 +1,15 @@
 <form wire:submit.prevent="store" id="importDataForm" class="flex flex-col gap-y-indent-half">
+    <div>
+        <label for="importFullPage" class="inline-block mb-2">
+            Ссылка на первую страницу новостей
+        </label>
+        <input type="text" id="importFullPage"
+               class="form-control"
+               wire:loading.attr="disabled"
+               wire:model.live.debounce.300ms="fullPage">
+        <div class="text-info">Вставь ссылку на страницу с новостями и форма заполнится сама (:</div>
+    </div>
+
     <div class="row">
         <div class="col w-1/3">
             <label for="importUrl" class="inline-block mb-2">

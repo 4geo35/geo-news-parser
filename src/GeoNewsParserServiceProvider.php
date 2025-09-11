@@ -1,6 +1,7 @@
 <?php
 
 namespace GIS\GeoNewsParser;
+use GIS\GeoNewsParser\Helpers\ImportActionsManager;
 use GIS\GeoNewsParser\Models\GeoImport;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -37,6 +38,10 @@ class GeoNewsParserServiceProvider extends ServiceProvider
 
     protected function initFacades(): void
     {
+        $this->app->singleton("geo-import-actions", function () {
+            $managerClass = config("geo-news-parser.customImportActionsManager") ?? ImportActionsManager::class;
+            return new $managerClass;
+        });
     }
 
     protected function setPolicies(): void
