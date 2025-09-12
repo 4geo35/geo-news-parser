@@ -10,6 +10,10 @@ use Livewire\Component;
 
 class ListWire extends Component
 {
+    public bool $displayDelete = false;
+
+    public string|null $importId = null;
+
     public string $fullPage = "";
     public string $url = "";
     public string $page = "";
@@ -85,12 +89,57 @@ class ListWire extends Component
         $import->save();
         // TODO: run import
         session()->flash("import-success", "Импорт новостей сохранен и запущен!");
+        $this->resetForm();
+    }
+
+    public function showDelete(string $id): void
+    {
         $this->resetFields();
+        $this->importId = $id;
+        $import = $this->findModel();
+        if (! $import) { return; }
+        if (! $this->checkAuth("delete", $import)) { return; }
+
+        $this->displayDelete = true;
+    }
+
+    public function closeDelete(): void
+    {
+        $this->resetFields();
+        $this->displayDelete = false;
+    }
+
+    public function confirmDelete(): void
+    {
+        $import = $this->findModel();
+        if (! $import) { return; }
+        if (! $this->checkAuth("delete", $import)) { return; }
+
+        $import->delete();
+        $this->closeDelete();
+        session()->flash("import-success", "Импорт успешно удален");
+    }
+
+    protected function resetForm(): void
+    {
+        $this->reset("fullPage", "url", "page", "paginator", "firstPage", "lastPage", "clearAll");
     }
 
     protected function resetFields(): void
     {
-        $this->reset("fullPage", "url", "page", "paginator", "firstPage", "lastPage", "clearAll");
+        $this->reset("importId");
+    }
+
+    protected function findModel(): ?GeoImportInterface
+    {
+        $importModelClass = config("geo-news-parser.customGeoImportModel") ?? GeoImport::class;
+        $import = $importModelClass::query()->find($this->importId);
+        if (! $import) {
+            session()->flash("import-error", "Импорт не найден");
+            $this->closeDelete();
+            return null;
+        }
+        return $import;
     }
 
     protected function checkAuth(string $action, GeoImportInterface $import = null): bool

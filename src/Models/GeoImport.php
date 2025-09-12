@@ -18,6 +18,12 @@ class GeoImport extends Model implements GeoImportInterface
         "started_at", "finished_at",
     ];
 
+    public function getClearedUrlAttribute(): string
+    {
+        $splitted = parse_url($this->url);
+        return $splitted["host"];
+    }
+
     public function getAsciiUrlAttribute(): string
     {
         $splitted = parse_url($this->url);
@@ -33,10 +39,26 @@ class GeoImport extends Model implements GeoImportInterface
         ]);
     }
 
+    public function getClearedFirstPageUrlAttribute(): string
+    {
+        return implode("/", [
+            $this->page,
+            $this->paginator . $this->first_page
+        ]);
+    }
+
     public function getLastPageUrlAttribute(): string
     {
         return implode("/", [
             $this->ascii_url,
+            $this->page,
+            $this->paginator . $this->last_page
+        ]);
+    }
+
+    public function getClearedLastPageUrlAttribute(): string
+    {
+        return implode("/", [
             $this->page,
             $this->paginator . $this->last_page
         ]);
