@@ -1,5 +1,10 @@
 <div class="card">
     <div class="card-body">
-        @include("gnp::admin.imports.includes.form")
+        <div class="space-y-indent-half">
+            <x-tt::notifications.error prefix="import-" />
+            <x-tt::notifications.success prefix="import-" />
+            @include("gnp::admin.imports.includes.form")
+        </div>
     </div>
+    @include("gnp::admin.imports.includes.table")
 </div>

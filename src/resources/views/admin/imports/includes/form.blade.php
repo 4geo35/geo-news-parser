@@ -4,10 +4,11 @@
             Ссылка на первую страницу новостей
         </label>
         <input type="text" id="importFullPage"
-               class="form-control"
+               class="form-control" placeholder="https://example.com/news/page15"
                wire:loading.attr="disabled"
                wire:model.live.debounce.300ms="fullPage">
         <div class="text-info">Вставь ссылку на страницу с новостями и форма заполнится сама (:</div>
+        <div class="text-info">А если вставить ссылку на последнюю страницу, то он заполнит и ее!</div>
     </div>
 
     <div class="row">
@@ -17,16 +18,16 @@
             </label>
             <input type="url" id="importUrl"
                    class="form-control {{ $errors->has("url") ? "border-danger" : "" }}"
-                   required
+                   required placeholder="https://example.com"
                    wire:loading.attr="disabled"
                    wire:model="url">
             <x-tt::form.error name="url"/>
         </div>
         <div class="col w-1/3">
             <label for="importPage" class="inline-block mb-2">
-                Страница новостей
+                Страница новостей<span class="text-danger">*</span>
             </label>
-            <input type="text" id="importPage"
+            <input type="text" id="importPage" required placeholder="news"
                    class="form-control {{ $errors->has("page") ? "border-danger" : "" }}"
                    wire:loading.attr="disabled"
                    wire:model="page">
@@ -34,9 +35,9 @@
         </div>
         <div>
             <label for="importPaginator" class="inline-block mb-2">
-                Адрес пагинатора
+                Адрес пагинатора<span class="text-danger">*</span>
             </label>
-            <input type="text" id="importPaginator"
+            <input type="text" id="importPaginator" required placeholder="page"
                    class="form-control {{ $errors->has("paginator") ? "border-danger" : "" }}"
                    wire:loading.attr="disabled"
                    wire:model="paginator">

@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedInteger("first_page")->nullable();
             $table->unsignedInteger("last_page")->nullable();
             $table->dateTime("clear_all_at")->nullable();
+            $table->dateTime("started_at")->nullable();
+            $table->dateTime("finished_at")->nullable();
             $table->timestamps();
         });
     }
