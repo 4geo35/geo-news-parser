@@ -12,6 +12,7 @@
     "require": {
         "4geo35/tailwindcss-theme": "@dev",
         "4geo35/user-management": "@dev",
+        "4geo35/article-pages": "@dev",
         "4geo35/traits-helpers": "@dev"
     },
     "autoload": {

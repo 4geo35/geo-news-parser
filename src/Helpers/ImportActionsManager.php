@@ -3,10 +3,14 @@
 namespace GIS\GeoNewsParser\Helpers;
 
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
+use GIS\GeoNewsParser\Jobs\ProcessClearArticles;
+use GIS\GeoNewsParser\Jobs\ProcessPaginationPage;
 use GIS\GeoNewsParser\Models\GeoImport;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Bus\Batch;
+use Illuminate\Support\Facades\Bus;
 
 class ImportActionsManager
 {
@@ -46,11 +50,29 @@ class ImportActionsManager
         return $result >= 1;
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function run(GeoImportInterface $import): void
     {
+        $jobsArray = [
+            new ProcessClearArticles($import),
+        ];
+        for ($i = 1; $i <= $import->last_page; $i++) {
+            $jobsArray[] = new ProcessPaginationPage($import, $i);
+        }
+
+        $batch = Bus::batch($jobsArray)
+            ->finally(function (Batch $batch) use ($import) {
+                $import->update([
+                    "finished_at" => now(),
+                ]);
+            })->name("Import geo news")->dispatch();
+
         $import->update([
             "started_at" => now(),
             "finished_at" => null,
+            "batch_id" => $batch->id,
         ]);
     }
 
