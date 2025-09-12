@@ -46,6 +46,21 @@ class ImportActionsManager
         return $result >= 1;
     }
 
+    public function run(GeoImportInterface $import): void
+    {
+        $import->update([
+            "started_at" => now(),
+            "finished_at" => null,
+        ]);
+    }
+
+    public function stop(GeoImportInterface $import): void
+    {
+        $import->update([
+            "finished_at" => now(),
+        ]);
+    }
+
     protected function checkUrl(string $baseUri, string $url): bool
     {
         try {

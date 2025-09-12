@@ -64,13 +64,9 @@ class ListWire extends Component
 
     public function store(): void
     {
+        if (! $this->checkCurrentImports()) { return; }
         if (! $this->checkAuth("create")) { return; }
         $this->validate();
-
-        if (ImportActions::existsStartedImport()) {
-            session()->flash("import-error", "Импорт уже запущен!");
-            return;
-        }
 
         $importModelClass = config("geo-news-parser.customGeoImportModel") ?? GeoImport::class;
         $import = new $importModelClass();
@@ -87,9 +83,35 @@ class ListWire extends Component
         }
 
         $import->save();
-        // TODO: run import
+        ImportActions::startImport($import);
         session()->flash("import-success", "Импорт новостей сохранен и запущен!");
         $this->resetForm();
+    }
+
+    public function run(string $id): void
+    {
+        if (! $this->checkCurrentImports()) { return; }
+
+        $this->resetFields();
+        $this->importId = $id;
+        $import = $this->findModel();
+        if (! $import) { return; }
+        if (! $this->checkAuth("update", $import)) { return; }
+
+        ImportActions::run($import);
+        session()->flash("import-success", "Импорт новостей запущен!");
+    }
+
+    public function stop(string $id): void
+    {
+        $this->resetFields();
+        $this->importId = $id;
+        $import = $this->findModel();
+        if (! $import) { return; }
+        if (! $this->checkAuth("update", $import)) { return; }
+
+        ImportActions::stop($import);
+        session()->flash("import-success", "Импорт новостей остановлен!");
     }
 
     public function showDelete(string $id): void
@@ -152,5 +174,14 @@ class ListWire extends Component
             session()->flash("import-error", "Неавторизованное действие");
             return false;
         }
+    }
+
+    protected function checkCurrentImports(): bool
+    {
+        if (ImportActions::existsStartedImport()) {
+            session()->flash("import-error", "Импорт уже запущен!");
+            return false;
+        }
+        return true;
     }
 }

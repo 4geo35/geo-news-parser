@@ -33,7 +33,20 @@
                         </li>
                     </ul>
                 </td>
-                <td></td>
+                <td>
+                    <ul>
+                        @if ($item->started_at && ! $item->finished_at)
+                            <li class="flex justify-between space-x-2">
+                                <span class="font-semibold">Запущен:</span> <span>{{ $item->started_human }}</span>
+                            </li>
+                        @endif
+                        @if ($item->finished_at)
+                            <li class="flex justify-between space-x-2">
+                                <span class="font-semibold">Закончен:</span> <span>{{ $item->started_human }}</span>
+                            </li>
+                        @endif
+                    </ul>
+                </td>
                 <td>{{ $item->created_human }}</td>
                 <td>
                     <div class="flex justify-center space-x-1">

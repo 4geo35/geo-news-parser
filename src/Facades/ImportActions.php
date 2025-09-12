@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool checkUrls(GeoImportInterface $import)
  * @method static bool existsStartedImport()
  *
+ * @method static void run(GeoImportInterface $import)
+ * @method static void stop(GeoImportInterface $import)
+ *
  * @see ImportActionsManager
  */
 class ImportActions extends Facade
