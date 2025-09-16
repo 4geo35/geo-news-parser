@@ -2,13 +2,11 @@
 
 namespace GIS\GeoNewsParser\Helpers;
 
+use GIS\GeoNewsParser\Facades\ParserActions;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use GIS\GeoNewsParser\Jobs\ProcessClearArticles;
 use GIS\GeoNewsParser\Jobs\ProcessPaginationPage;
 use GIS\GeoNewsParser\Models\GeoImport;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 
@@ -37,9 +35,9 @@ class ImportActionsManager
 
     public function checkUrls(GeoImportInterface $import): bool
     {
-        if (! $this->checkUrl($import->url, $import->news_url)) { return false; }
-        if (! $this->checkUrl($import->url, $import->first_page_url)) { return false; }
-        if (! $this->checkUrl($import->url, $import->last_page_url)) { return false; }
+        if (! ParserActions::checkUrl($import->url, $import->news_url)) { return false; }
+        if (! ParserActions::checkUrl($import->url, $import->first_page_url)) { return false; }
+        if (! ParserActions::checkUrl($import->url, $import->last_page_url)) { return false; }
         return true;
     }
 
@@ -50,6 +48,15 @@ class ImportActionsManager
         return $result >= 1;
     }
 
+    public function getPaginatorList(GeoImportInterface $import): array
+    {
+        $array = [];
+        for ($i = $import->first_page; $i <= $import->last_page; $i++) {
+            $array[] = $import->paginator_url . $i;
+        }
+        return $array;
+    }
+
     /**
      * @throws \Throwable
      */
@@ -58,8 +65,9 @@ class ImportActionsManager
         $jobsArray = [
             new ProcessClearArticles($import),
         ];
-        for ($i = 1; $i <= $import->last_page; $i++) {
-            $jobsArray[] = new ProcessPaginationPage($import, $i);
+        $paginatorList = $this->getPaginatorList($import);
+        foreach ($paginatorList as $url) {
+            $jobsArray[] = new ProcessPaginationPage($import, $url);
         }
 
         $batch = Bus::batch($jobsArray)
@@ -85,23 +93,5 @@ class ImportActionsManager
         $batchId = $import->batch_id;
         $batch = Bus::findBatch($batchId);
         $batch?->cancel();
-    }
-
-    protected function checkUrl(string $baseUri, string $url): bool
-    {
-        try {
-            $client = new Client([
-                "base_uri" => $baseUri,
-                "timeout" => 5.0,
-                "connect_timeout" => 10,
-                "allow_redirects" => false,
-            ]);
-            $response = $client->request('GET', $url, [
-                "verify" => false,
-            ]);
-            return $response->getStatusCode() === 200;
-        } catch (ClientException|GuzzleException $e) {
-            return false;
-        }
     }
 }

@@ -16,7 +16,15 @@ class GeoImport extends Model implements GeoImportInterface
         "url", "page", "paginator",
         "first_page", "last_page", "clear_all_at",
         "started_at", "finished_at",
+        "settings",
     ];
+
+    protected function casts(): array
+    {
+        return [
+            "settings" => "json"
+        ];
+    }
 
     public function getClearedUrlAttribute(): string
     {
@@ -36,6 +44,15 @@ class GeoImport extends Model implements GeoImportInterface
             $this->ascii_url,
             $this->page,
             $this->paginator . $this->first_page
+        ]);
+    }
+
+    public function getPaginatorUrlAttribute(): string
+    {
+        return implode("/", [
+            $this->ascii_url,
+            $this->page,
+            $this->paginator
         ]);
     }
 

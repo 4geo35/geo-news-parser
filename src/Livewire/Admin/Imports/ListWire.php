@@ -5,14 +5,18 @@ namespace GIS\GeoNewsParser\Livewire\Admin\Imports;
 use GIS\GeoNewsParser\Facades\ImportActions;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use GIS\GeoNewsParser\Models\GeoImport;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Livewire\Component;
 
 class ListWire extends Component
 {
     public bool $displayDelete = false;
+    public bool $displaySettings = false;
+    public bool $displaySettingsList = false;
 
     public string|null $importId = null;
+    public array $settingsList = [];
 
     public string $fullPage = "";
     public string $url = "";
@@ -21,6 +25,20 @@ class ListWire extends Component
     public int $firstPage = 1;
     public int $lastPage = 1;
     public bool $clearAll = false;
+    // settings
+    public string $titleUrl = "//h4//strong//a/@href";
+    public string $shortText = "//div[contains(@class, 'post-decription')]";
+    public string $imageUrl = "//a[contains(@class, 'news-img')]//img/@src";
+    public string $titleText = "//h1";
+    public string $fullDescription = "//div[contains(@class, 'default-style')]";
+    public string $createdDate = "//div[contains(@class, 'post_date')]";
+    public string $insideImageUrl = "//div[contains(@class, 'default-style')]";
+    public string $galleryImageUrls = "//div[contains(@class, 'default-style')]";
+    public int $minimalImageWidth = 150;
+    public int $minimalImageSize = 30000;
+    public string $metaTitle = "//title";
+    public string $metaDescription = "//meta[@name='description']/@content";
+    public string $metaKeywords = "//meta[@name='keywords']/@content";
 
     public function rules(): array
     {
@@ -62,11 +80,57 @@ class ListWire extends Component
         return view("gnp::livewire.admin.imports.list-wire", compact("imports"));
     }
 
+    public function showSettings(): void
+    {
+        if (! $this->checkAuth("create")) { return; }
+        $this->displaySettings = true;
+    }
+
+    public function closeSettings(): void
+    {
+        $this->displaySettings = false;
+    }
+
     public function store(): void
     {
         if (! $this->checkCurrentImports()) { return; }
         if (! $this->checkAuth("create")) { return; }
         $this->validate();
+        try {
+            $validated = Validator::make([
+                "titleUrl" => $this->titleUrl,
+                "shortText" => $this->shortText,
+                "imageUrl" => $this->imageUrl,
+                "titleText" => $this->titleText,
+                "fullDescription" => $this->fullDescription,
+                "createdDate" => $this->createdDate,
+                "insideImageUrl" => $this->insideImageUrl,
+                "galleryImageUrls" => $this->galleryImageUrls,
+                "minimalImageWidth" => $this->minimalImageWidth,
+                "minimalImageSize" => $this->minimalImageSize,
+                "metaTitle" => $this->metaTitle,
+                "metaDescription" => $this->metaDescription,
+                "metaKeywords" => $this->metaKeywords,
+            ], [
+                "titleUrl" => ["required", "string", "max:255"],
+                "shortText" => ["required", "string", "max:255"],
+                "imageUrl" => ["required", "string", "max:255"],
+                "titleText" => ["required", "string", "max:255"],
+                "fullDescription" => ["required", "string", "max:255"],
+                "createdDate" => ["required", "string", "max:255"],
+                "insideImageUrl" => ["required", "string", "max:255"],
+                "galleryImageUrls" => ["required", "string", "max:255"],
+                "minimalImageWidth" => ["required", "integer", "min:1"],
+                "minimalImageSize" => ["required", "integer", "min:1"],
+                "metaTitle" => ["required", "string", "max:255"],
+                "metaDescription" => ["required", "string", "max:255"],
+                "metaKeywords" => ["required", "string", "max:255"],
+            ])->validate();
+        } catch (\Exception $exception) {
+            debugbar()->info($exception->getMessage());
+            session()->flash("import-error", "Ошибка в настройках: " . $exception->getMessage());
+            return;
+        }
 
         $importModelClass = config("geo-news-parser.customGeoImportModel") ?? GeoImport::class;
         $import = new $importModelClass();
@@ -76,6 +140,21 @@ class ListWire extends Component
         $import->first_page = $this->firstPage;
         $import->last_page = $this->lastPage;
         $import->clear_all_at = $this->clearAll ? now() : null;
+        $import->settings = [
+            "titleUrl" => $this->titleUrl,
+            "shortText" => $this->shortText,
+            "imageUrl" => $this->imageUrl,
+            "titleText" => $this->titleText,
+            "fullDescription" => $this->fullDescription,
+            "createdDate" => $this->createdDate,
+            "insideImageUrl" => $this->insideImageUrl,
+            "galleryImageUrls" => $this->galleryImageUrls,
+            "minimalImageWidth" => $this->minimalImageWidth,
+            "minimalImageSize" => $this->minimalImageSize,
+            "metaTitle" => $this->metaTitle,
+            "metaDescription" => $this->metaDescription,
+            "metaKeywords" => $this->metaKeywords,
+        ];
 
         if (! ImportActions::checkUrls($import)) {
             session()->flash("import-error", "Не удалось загрузить сайт по этому адресу");
@@ -83,7 +162,7 @@ class ListWire extends Component
         }
 
         $import->save();
-        ImportActions::startImport($import);
+        ImportActions::run($import);
         session()->flash("import-success", "Импорт новостей сохранен и запущен!");
         $this->resetForm();
     }
@@ -144,9 +223,37 @@ class ListWire extends Component
         session()->flash("import-success", "Импорт успешно удален");
     }
 
+    public function showSettingsList(string $id): void
+    {
+        $this->resetFields();
+        $this->importId = $id;
+        $import = $this->findModel();
+        if (! $import) { return; }
+
+        $this->settingsList = $import->settings;
+        $this->displaySettingsList = true;
+    }
+
+    public function closeSettingsList(): void
+    {
+        $this->displaySettingsList = false;
+    }
+
+    public function copySettings(): void
+    {
+        foreach ($this->settingsList as $key => $value) {
+            if (isset($this->{$key})) {
+                $this->{$key} = $value;
+            }
+        }
+        $this->closeSettingsList();
+        session()->flash("import-success", "Настройки скопированы");
+    }
+
     protected function resetForm(): void
     {
         $this->reset("fullPage", "url", "page", "paginator", "firstPage", "lastPage", "clearAll");
+        $this->reset("titleUrl", "shortText", "imageUrl", "titleText", "fullDescription", "createdDate", "insideImageUrl", "galleryImageUrls", "minimalImageWidth", "minimalImageSize", "metaTitle", "metaDescription", "metaKeywords");
     }
 
     protected function resetFields(): void

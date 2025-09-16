@@ -61,6 +61,11 @@
                                 <x-tt::ico.trash />
                             </button>
                         @endcan
+                        <button type="button" class="btn btn-sm btn-dark px-btn-x-ico"
+                                wire:loading.attr="disabled"
+                                wire:click="showSettingsList('{{ $item->id }}')">
+                            <x-gnp::ico.settings />
+                        </button>
                     </div>
                 </td>
             </tr>

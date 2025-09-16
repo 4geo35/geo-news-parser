@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array splitFullUrl(string $url)
  * @method static bool checkUrls(GeoImportInterface $import)
  * @method static bool existsStartedImport()
+ * @method static array getPaginatorList(GeoImportInterface $import)
  *
  * @method static void run(GeoImportInterface $import)
  * @method static void stop(GeoImportInterface $import)

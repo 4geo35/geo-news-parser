@@ -75,9 +75,12 @@
             Очистить все статьи
         </label>
     </div>
-    <div>
+    <div class="flex items-center justify-between space-x-2">
         <button type="submit" form="importDataForm" class="btn btn-primary">
             Запустить
+        </button>
+        <button type="button" class="btn btn-outline-dark" wire:click="showSettings">
+            Настройки
         </button>
     </div>
 </form>

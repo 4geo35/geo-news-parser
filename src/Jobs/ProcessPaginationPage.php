@@ -18,7 +18,7 @@ class ProcessPaginationPage implements ShouldQueue
      */
     public function __construct(
         public GeoImportInterface $import,
-        public int $page
+        public string $url
     ){}
 
     /**
@@ -29,11 +29,12 @@ class ProcessPaginationPage implements ShouldQueue
         if ($this->batch()->cancelled()) {
             return;
         }
-        Log::info("Processing {$this->page} page for {$this->import->id}");
+        Log::info("Processing {$this->url} page for {$this->import->id}");
 
         $import = $this->import;
-        $this->batch()->add(Collection::times(10, function (int $number) use ($import) {
-            return new ProcessNewsPage($import, "page number: " . $number);
+        $url = $this->url;
+        $this->batch()->add(Collection::times(10, function (int $number) use ($import, $url) {
+            return new ProcessNewsPage($import, "page url: " . $url);
         }));
         sleep(3);
     }

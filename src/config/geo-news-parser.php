@@ -4,7 +4,9 @@ return [
     // Admin
     "customAdminImportController" => null,
     "customGeoImportModel" => null,
+
     "customImportActionsManager" => null,
+    "customParserActionsManager" => null,
 
     "customImportListComponent" => null,
     "customImportProgressComponent" => null,
