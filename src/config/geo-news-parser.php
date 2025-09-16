@@ -7,6 +7,7 @@ return [
     "customImportActionsManager" => null,
 
     "customImportListComponent" => null,
+    "customImportProgressComponent" => null,
 
     // Policy
     "importPolicyTitle" => "Управление импортом новостей",

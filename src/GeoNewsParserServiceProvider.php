@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
 use GIS\GeoNewsParser\Livewire\Admin\Imports\ListWire as ImportListWire;
+use GIS\GeoNewsParser\Livewire\Admin\Imports\ProgressWire as ImportProgressWire;
 
 class GeoNewsParserServiceProvider extends ServiceProvider
 {
@@ -34,6 +35,13 @@ class GeoNewsParserServiceProvider extends ServiceProvider
             "gnp-import-list",
             $component ?? ImportListWire::class
         );
+
+        $component = config("geo-news-parser.customImportProgressComponent");
+        Livewire::component(
+            "gnp-import-progress",
+            $component ?? ImportProgressWire::class
+        );
+
     }
 
     protected function initFacades(): void

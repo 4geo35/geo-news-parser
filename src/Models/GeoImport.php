@@ -97,4 +97,9 @@ class GeoImport extends Model implements GeoImportInterface
         if (empty($value)) return $value;
         return date_helper()->format($value);
     }
+
+    public function getInProgressAttribute(): bool
+    {
+        return $this->started_at && ! $this->finished_at;
+    }
 }

@@ -81,6 +81,10 @@ class ImportActionsManager
         $import->update([
             "finished_at" => now(),
         ]);
+
+        $batchId = $import->batch_id;
+        $batch = Bus::findBatch($batchId);
+        $batch?->cancel();
     }
 
     protected function checkUrl(string $baseUri, string $url): bool

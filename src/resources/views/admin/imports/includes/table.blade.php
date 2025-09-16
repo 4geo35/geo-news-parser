@@ -34,35 +34,23 @@
                     </ul>
                 </td>
                 <td>
-                    <ul>
-                        @if ($item->started_at && ! $item->finished_at)
-                            <li class="flex justify-between space-x-2">
-                                <span class="font-semibold">Запущен:</span> <span>{{ $item->started_human }}</span>
-                            </li>
-                        @endif
-                        @if ($item->finished_at)
-                            <li class="flex justify-between space-x-2">
-                                <span class="font-semibold">Закончен:</span> <span>{{ $item->started_human }}</span>
-                            </li>
-                        @endif
-                    </ul>
+                    <livewire:gnp-import-progress :import="$item" wire:key="$import->id" />
                 </td>
                 <td>{{ $item->created_human }}</td>
                 <td>
                     <div class="flex justify-center space-x-1">
                         @can("update", $item)
-                            @if (! $item->started_at || $item->finished_at)
-                                <button type="button" class="btn btn-sm btn-success px-btn-x-ico"
-                                        wire:loading.attr="disabled"
-                                        wire:click="run('{{ $item->id }}')">
-                                    <x-gnp::ico.play-circle />
-                                </button>
-                            @endif
-                            @if ($item->started_at && ! $item->finished_at)
+                            @if ($item->in_progress)
                                 <button type="button" class="btn btn-sm btn-danger px-btn-x-ico"
                                         wire:loading.attr="disabled"
                                         wire:click="stop('{{ $item->id }}')">
                                     <x-gnp::ico.stop-circle />
+                                </button>
+                            @else
+                                <button type="button" class="btn btn-sm btn-success px-btn-x-ico"
+                                        wire:loading.attr="disabled"
+                                        wire:click="run('{{ $item->id }}')">
+                                    <x-gnp::ico.play-circle />
                                 </button>
                             @endcan
                         @endcan

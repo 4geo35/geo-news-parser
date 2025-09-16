@@ -29,5 +29,6 @@ class ProcessNewsPage implements ShouldQueue
             return;
         }
         Log::info("Processing {$this->url} page for {$this->import->id}");
+        sleep(3);
     }
 }

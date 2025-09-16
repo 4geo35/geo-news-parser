@@ -35,5 +35,6 @@ class ProcessPaginationPage implements ShouldQueue
         $this->batch()->add(Collection::times(10, function (int $number) use ($import) {
             return new ProcessNewsPage($import, "page number: " . $number);
         }));
+        sleep(3);
     }
 }

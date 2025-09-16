@@ -100,6 +100,7 @@ class ListWire extends Component
 
         ImportActions::run($import);
         session()->flash("import-success", "Импорт новостей запущен!");
+        $this->dispatch("update-import", id: $import->id );
     }
 
     public function stop(string $id): void
@@ -112,6 +113,7 @@ class ListWire extends Component
 
         ImportActions::stop($import);
         session()->flash("import-success", "Импорт новостей остановлен!");
+        $this->dispatch("update-import", id: $import->id );
     }
 
     public function showDelete(string $id): void
