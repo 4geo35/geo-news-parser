@@ -65,6 +65,9 @@
     <x-slot name="title">Настройки поиска данных</x-slot>
     <x-slot name="content">
         <div class="space-y-indent-half">
+            <div class="text-info">
+                Синтаксис настроек это <a href="https://www.w3schools.com/xml/xpath_syntax.asp" target="_blank" class="text-primary hover:text-primary-hover">XPath</a>
+            </div>
             <div>
                 <label for="importTitleUrl" class="inline-block mb-2">
                     Ссылка на страницу

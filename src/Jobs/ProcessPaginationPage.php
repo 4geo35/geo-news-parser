@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use GIS\GeoNewsParser\Facades\ParserActions;
 
 class ProcessPaginationPage implements ShouldQueue
 {
@@ -33,9 +34,12 @@ class ProcessPaginationPage implements ShouldQueue
 
         $import = $this->import;
         $url = $this->url;
-        $this->batch()->add(Collection::times(10, function (int $number) use ($import, $url) {
-            return new ProcessNewsPage($import, "page url: " . $url);
-        }));
-        sleep(3);
+        $pagesData = ParserActions::getPagesUrls($import, $url);
+        Log::info("Get " . count($pagesData) . " pages");
+        $jobsArray = [];
+        foreach ($pagesData as $pagesDatum) {
+            $jobsArray[] = new ProcessNewsPage($import, $pagesDatum);
+        }
+        $this->batch()->add($jobsArray);
     }
 }

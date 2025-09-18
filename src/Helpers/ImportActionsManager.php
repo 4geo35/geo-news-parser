@@ -5,6 +5,7 @@ namespace GIS\GeoNewsParser\Helpers;
 use GIS\GeoNewsParser\Facades\ParserActions;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use GIS\GeoNewsParser\Jobs\ProcessClearArticles;
+use GIS\GeoNewsParser\Jobs\ProcessPageMetas;
 use GIS\GeoNewsParser\Jobs\ProcessPaginationPage;
 use GIS\GeoNewsParser\Models\GeoImport;
 use Illuminate\Bus\Batch;
@@ -64,6 +65,7 @@ class ImportActionsManager
     {
         $jobsArray = [
             new ProcessClearArticles($import),
+            new ProcessPageMetas($import),
         ];
         $paginatorList = $this->getPaginatorList($import);
         foreach ($paginatorList as $url) {

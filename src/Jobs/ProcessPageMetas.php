@@ -7,8 +7,9 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
+use GIS\GeoNewsParser\Facades\ParserActions;
 
-class ProcessNewsPage implements ShouldQueue
+class ProcessPageMetas implements ShouldQueue
 {
     use Queueable, Batchable;
 
@@ -16,8 +17,7 @@ class ProcessNewsPage implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public GeoImportInterface $import,
-        public array $data,
+        public GeoImportInterface $import
     ){}
 
     /**
@@ -28,7 +28,7 @@ class ProcessNewsPage implements ShouldQueue
         if ($this->batch()->cancelled()) {
             return;
         }
-        $data = $this->data;
-        Log::info("Processing page for {$this->import->id}: " . json_encode($data));
+        $metaData = ParserActions::getPageMetas($this->import);
+        Log::info("Processing page metas: " . json_encode($metaData));
     }
 }
