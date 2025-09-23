@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static array|string getPageMetas(GeoImportInterface $import)
  * @method static array|string getPagesUrls(GeoImportInterface $import, string $paginatorUrl)
+ * @method static array|string getPageData(GeoImportInterface $import, array $pageInfo)
+ *
  * @method static bool checkUrl(string $baseUri, string $url)
  *
  * @see ParserActionsManager

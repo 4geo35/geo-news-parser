@@ -1,6 +1,7 @@
 <?php
 
 namespace GIS\GeoNewsParser;
+use GIS\GeoNewsParser\Helpers\ImageParserActionsManager;
 use GIS\GeoNewsParser\Helpers\ImportActionsManager;
 use GIS\GeoNewsParser\Helpers\ParserActionsManager;
 use GIS\GeoNewsParser\Models\GeoImport;
@@ -53,6 +54,10 @@ class GeoNewsParserServiceProvider extends ServiceProvider
         });
         $this->app->singleton("geo-parser-actions", function () {
             $managerClass = config("geo-news-parser.customParserActionsManager") ?? ParserActionsManager::class;
+            return new $managerClass;
+        });
+        $this->app->singleton("geo-image-parser-actions", function () {
+            $managerClass = config("geo-news-parser.customImageParserActionsManager") ?? ImageParserActionsManager::class;
             return new $managerClass;
         });
     }
