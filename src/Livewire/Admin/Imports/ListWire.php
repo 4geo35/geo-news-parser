@@ -7,6 +7,7 @@ use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use GIS\GeoNewsParser\Models\GeoImport;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ListWire extends Component
@@ -73,14 +74,25 @@ class ListWire extends Component
         $this->lastPage = $lastPage;
     }
 
-    public function render(): View
+    public function mount(): void
     {
         $this->time = now()->timestamp;
+    }
+
+    public function render(): View
+    {
         $importModelClass = config("geo-news-parser.customGeoImportModel") ?? GeoImport::class;
         $query = $importModelClass::query();
         $query->orderBy("created_at", "DESC");
         $imports = $query->paginate();
-        return view("gnp::livewire.admin.imports.list-wire", compact("imports"));
+        $time = $this->time;
+        return view("gnp::livewire.admin.imports.list-wire", compact("imports", "time"));
+    }
+
+    #[On("complete-progress")]
+    public function refreshTime(): void
+    {
+        $this->time = now()->timestamp;
     }
 
     public function showSettings(): void
@@ -130,7 +142,6 @@ class ListWire extends Component
                 "metaKeywords" => ["required", "string", "max:255"],
             ])->validate();
         } catch (\Exception $exception) {
-            debugbar()->info($exception->getMessage());
             session()->flash("import-error", "Ошибка в настройках: " . $exception->getMessage());
             return;
         }

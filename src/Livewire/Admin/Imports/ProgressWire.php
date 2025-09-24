@@ -6,7 +6,6 @@ use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 
 class ProgressWire extends Component
@@ -41,8 +40,12 @@ class ProgressWire extends Component
 
     protected function setBatch(): void
     {
+        $hasProgress = $this->batchProgress !== null;
         $this->reset("batchProgress");
-        if (! $this->import->in_progress) { return; }
+        if (! $this->import->in_progress) {
+            if ($hasProgress) { $this->dispatch("complete-progress"); }
+            return;
+        }
         $batchId = $this->import->batch_id;
         $batch = Bus::findBatch($batchId);
         if (! $batch) {
