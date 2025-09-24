@@ -2,6 +2,7 @@
 
 namespace GIS\GeoNewsParser\Jobs;
 
+use GIS\ArticlePages\Interfaces\ArticleModelInterface;
 use GIS\ArticlePages\Models\Article;
 use GIS\ArticlePages\Models\ArticleBlock;
 use GIS\GeoNewsParser\Facades\ParserActions;
@@ -46,6 +47,29 @@ class ProcessNewsPage implements ShouldQueue
         } catch (\Exception $e) {
             // TODO: add log to import
             return;
+        }
+
+        $this->addDescription($pageData, $article);
+    }
+
+    protected function addDescription(array $pageData, ArticleModelInterface $article): void
+    {
+        if (empty($pageData["description"])) { return; }
+        if (empty(config("article-pages.blockTypesList")["text"])) {
+            // TODO: add log to import
+            return;
+        }
+
+        foreach ($pageData["description"] as $description) {
+            try {
+                $article->blocks()->create([
+                    "type" => "text",
+                    "description" => $description,
+                ]);
+            } catch (\Exception $e) {
+                // TODO: add log to import
+                continue;
+            }
         }
     }
 }
