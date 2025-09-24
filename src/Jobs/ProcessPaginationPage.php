@@ -36,10 +36,11 @@ class ProcessPaginationPage implements ShouldQueue
         $url = $this->url;
         $pagesData = ParserActions::getPagesUrls($import, $url);
         Log::info("Get " . count($pagesData) . " pages");
+        // TODO: remove debug
         $jobsArray = [];
         foreach ($pagesData as $pagesDatum) {
             $jobsArray[] = new ProcessNewsPage($import, $pagesDatum);
         }
-        $this->batch()->add($jobsArray);
+        if (count($jobsArray)) { $this->batch()->add($jobsArray); }
     }
 }

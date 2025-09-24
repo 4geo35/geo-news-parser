@@ -30,5 +30,7 @@ class ProcessPageMetas implements ShouldQueue
         }
         $metaData = ParserActions::getPageMetas($this->import);
         Log::info("Processing page metas: " . json_encode($metaData));
+        Log::info("Page meta data: " . json_encode($metaData));
+        // TODO remove debug
     }
 }

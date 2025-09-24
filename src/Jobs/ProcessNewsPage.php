@@ -2,6 +2,8 @@
 
 namespace GIS\GeoNewsParser\Jobs;
 
+use GIS\ArticlePages\Models\ArticleBlock;
+use GIS\GeoNewsParser\Facades\ParserActions;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,6 +31,9 @@ class ProcessNewsPage implements ShouldQueue
             return;
         }
         $data = $this->data;
+        $pageData = ParserActions::getPageData($this->import, $data);
         Log::info("Processing page for {$this->import->id}: " . json_encode($data));
+        Log::info("Data for page: " . json_encode($pageData));
+        // TODO: remove debug
     }
 }

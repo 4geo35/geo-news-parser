@@ -4,6 +4,7 @@
             <x-tt::table.heading class="text-left">Ссылки</x-tt::table.heading>
             <x-tt::table.heading class="text-left">Прогресс</x-tt::table.heading>
             <x-tt::table.heading class="text-left">Добавлен</x-tt::table.heading>
+            <x-tt::table.heading class="text-left">Удалить статьи</x-tt::table.heading>
             <x-tt::table.heading class="">Действия</x-tt::table.heading>
         </tr>
     </x-slot>
@@ -37,6 +38,7 @@
                     <livewire:gnp-import-progress :import="$item" wire:key="$import->id" />
                 </td>
                 <td>{{ $item->created_human }}</td>
+                <td>{{ $item->clear_all_at ? "Да" : "Нет" }}</td>
                 <td>
                     <div class="flex justify-center space-x-1">
                         @can("update", $item)

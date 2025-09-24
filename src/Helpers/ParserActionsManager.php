@@ -98,9 +98,14 @@ class ParserActionsManager
     {
         if (empty($pageInfo["url"])) { return "Can not find page url"; }
         $url = $pageInfo["url"];
-        $response = $this->getUrlResponse($import->url, $url);
-        if ($response->getStatusCode() !== 200) { return "Can not find news page url {$url}"; }
-        $content = $response->getBody()->getContents();
+        $content = Cache::rememberForever("test-page-content", function () use ($url, $import) {
+            $response = $this->getUrlResponse($import->url, $url);
+            if ($response->getStatusCode() !== 200) { return "Can not find news page url {$url}"; }
+            return $response->getBody()->getContents();
+        });
+//        $response = $this->getUrlResponse($import->url, $url);
+//        if ($response->getStatusCode() !== 200) { return "Can not find news page url {$url}"; }
+//        $content = $response->getBody()->getContents();
 
         libxml_use_internal_errors(true);
         $document = new DOMDocument();
@@ -108,7 +113,6 @@ class ParserActionsManager
         $xPath = new DOMXPath($document);
 
         $settings = (object) $import->settings;
-        debugbar()->info($settings);
 
         // Meta
         $meta = [
@@ -402,7 +406,6 @@ class ParserActionsManager
             "strip_tags" => true,
         ]);
         $converter->getConfig()->setOption('use_autolinks', true);
-
         return $converter->convert($str);
     }
 

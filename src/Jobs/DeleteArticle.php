@@ -7,9 +7,8 @@ use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Log;
 
-class ProcessClearArticles implements ShouldQueue
+class DeleteArticle implements ShouldQueue
 {
     use Queueable, Batchable;
 
@@ -17,7 +16,8 @@ class ProcessClearArticles implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public GeoImportInterface $import
+        public GeoImportInterface $import,
+        public int $articleId
     ){}
 
     /**
@@ -30,11 +30,7 @@ class ProcessClearArticles implements ShouldQueue
         }
         if (! $this->import->clear_all_at) { return; }
 
-        $articles = Article::query()->select("id")->get();
-        $jobsArray = [];
-        foreach ($articles as $article) {
-            $jobsArray[] = new DeleteArticle($this->import, $article->id);
-        }
-        if (count($jobsArray)) { $this->batch()->add($jobsArray); }
+        $article = Article::query()->find($this->articleId);
+        if ($article) { $article->delete(); }
     }
 }
