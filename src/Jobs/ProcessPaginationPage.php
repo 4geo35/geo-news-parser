@@ -6,8 +6,6 @@ use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use GIS\GeoNewsParser\Facades\ParserActions;
 
 class ProcessPaginationPage implements ShouldQueue
@@ -30,13 +28,10 @@ class ProcessPaginationPage implements ShouldQueue
         if ($this->batch()->cancelled()) {
             return;
         }
-        Log::info("Processing {$this->url} page for {$this->import->id}");
 
         $import = $this->import;
         $url = $this->url;
         $pagesData = ParserActions::getPagesUrls($import, $url);
-        Log::info("Get " . count($pagesData) . " pages");
-        // TODO: remove debug
         $jobsArray = [];
         foreach ($pagesData as $pagesDatum) {
             $jobsArray[] = new ProcessNewsPage($import, $pagesDatum);

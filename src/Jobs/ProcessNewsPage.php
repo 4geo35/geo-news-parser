@@ -2,6 +2,7 @@
 
 namespace GIS\GeoNewsParser\Jobs;
 
+use GIS\ArticlePages\Models\Article;
 use GIS\ArticlePages\Models\ArticleBlock;
 use GIS\GeoNewsParser\Facades\ParserActions;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
@@ -32,8 +33,19 @@ class ProcessNewsPage implements ShouldQueue
         }
         $data = $this->data;
         $pageData = ParserActions::getPageData($this->import, $data);
-        Log::info("Processing page for {$this->import->id}: " . json_encode($data));
-        Log::info("Data for page: " . json_encode($pageData));
-        // TODO: remove debug
+
+        $articleModelClass = config("article-pages.customArticleModel") ?? Article::class;
+
+        try {
+            $article = $articleModelClass::create([
+                "title" => $pageData['title'] ?? "Заголовок не определен",
+                "slug" => $pageData['slug'],
+                "short" => $pageData['short'] ?? "",
+                "published_at" => $pageData["createdDate"] ?? "",
+            ]);
+        } catch (\Exception $e) {
+            // TODO: add log to import
+            return;
+        }
     }
 }
