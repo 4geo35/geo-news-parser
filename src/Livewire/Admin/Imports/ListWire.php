@@ -11,6 +11,8 @@ use Livewire\Component;
 
 class ListWire extends Component
 {
+    public string $time;
+
     public bool $displayDelete = false;
     public bool $displaySettings = false;
     public bool $displaySettingsList = false;
@@ -73,6 +75,7 @@ class ListWire extends Component
 
     public function render(): View
     {
+        $this->time = now()->timestamp;
         $importModelClass = config("geo-news-parser.customGeoImportModel") ?? GeoImport::class;
         $query = $importModelClass::query();
         $query->orderBy("created_at", "DESC");

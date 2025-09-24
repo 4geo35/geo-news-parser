@@ -35,7 +35,7 @@
                     </ul>
                 </td>
                 <td>
-                    <livewire:gnp-import-progress :import="$item" wire:key="$import->id" />
+                    <livewire:gnp-import-progress :import="$item" :key="$item->id" />
                 </td>
                 <td>{{ $item->created_human }}</td>
                 <td>{{ $item->clear_all_at ? "Да" : "Нет" }}</td>
