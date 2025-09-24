@@ -279,7 +279,6 @@ class ParserActionsManager
             $imageWidth = ImageParserActions::getImageWidth($tmpLink);
 
             if ($imageSize > $biggestSize && $imageWidth > $biggestWidth) {
-                if ($mainImage) { $imageData[] = $mainImage; }
                 $biggestSize = $imageSize;
                 $biggestWidth = $imageWidth;
                 $mainImage = [
@@ -287,13 +286,13 @@ class ParserActionsManager
                     "size" => $biggestSize,
                     "width" => $imageWidth,
                 ];
-            } else {
-                $imageData[] = [
-                    "url" => $tmpLink,
-                    "size" => $imageSize,
-                    "width" => $imageWidth,
-                ];
             }
+
+            $imageData[] = [
+                "url" => $tmpLink,
+                "size" => $imageSize,
+                "width" => $imageWidth,
+            ];
         }
 
         return [$imageData, $mainImage];

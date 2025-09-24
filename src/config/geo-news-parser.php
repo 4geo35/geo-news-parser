@@ -8,6 +8,7 @@ return [
     "customImportActionsManager" => null,
     "customParserActionsManager" => null,
     "customImageParserActionsManager" => null,
+    "customCreateArticleActionsManager" => null,
 
     "customImportListComponent" => null,
     "customImportProgressComponent" => null,
