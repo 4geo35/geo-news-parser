@@ -1,11 +1,14 @@
 <?php
 
 namespace GIS\GeoNewsParser;
+use GIS\GeoNewsParser\Events\ArticleImportCompleted;
 use GIS\GeoNewsParser\Helpers\CreateArticleActionsManager;
 use GIS\GeoNewsParser\Helpers\ImageParserActionsManager;
 use GIS\GeoNewsParser\Helpers\ImportActionsManager;
 use GIS\GeoNewsParser\Helpers\ParserActionsManager;
+use GIS\GeoNewsParser\Listeners\SetFinishedDateToImport;
 use GIS\GeoNewsParser\Models\GeoImport;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -20,6 +23,11 @@ class GeoNewsParserServiceProvider extends ServiceProvider
         $this->addLivewireComponents();
         $this->setPolicies();
         $this->expandConfiguration();
+
+        Event::listen(
+            ArticleImportCompleted::class,
+            SetFinishedDateToImport::class
+        );
     }
 
     public function register(): void

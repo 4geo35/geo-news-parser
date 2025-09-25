@@ -9,6 +9,7 @@ use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use GIS\Metable\Facades\MetaActions;
 use GIS\Metable\Models\Meta;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 
 class CreateArticleActionsManager
 {
@@ -39,7 +40,7 @@ class CreateArticleActionsManager
                     "content" => $value,
                 ]);
             } catch (\Exception $e) {
-                // TODO: add log to import
+                Log::error("Не удалось создать мета {$key} для страницы: " . $e->getMessage());
             }
         }
 
@@ -58,7 +59,7 @@ class CreateArticleActionsManager
                 "published_at" => $pageData["createdDate"] ?? "",
             ]);
         } catch (\Exception $e) {
-            // TODO: add log to import
+            Log::error("Не удалось создать статью " . $pageData['slug'] . ": " . $e->getMessage());
             return null;
         }
         /**
@@ -72,7 +73,7 @@ class CreateArticleActionsManager
             if (!empty($image)) {
                 $article->storeDirectly($image);
             } else {
-                // TODO: add log to import
+                Log::error("Не удалось добавить изображение для статьи " . $pageData['slug'] . " с адресом " . $imageUrl);
             }
         }
 
@@ -103,7 +104,7 @@ class CreateArticleActionsManager
                     "content" => $value,
                 ]);
             } catch (\Exception $e) {
-                // TODO: add log to import
+                Log::error("Не удалось создать мета {$key} для статьи {$article->id}: " . $e->getMessage());
             }
         }
 
@@ -114,7 +115,7 @@ class CreateArticleActionsManager
     {
         if (empty($pageData["description"])) { return null; }
         if (empty(config("article-pages.blockTypesList")["text"])) {
-            // TODO: add log to import
+            Log::error("В конфигурации article-pages не задан тип блока text");
             return null;
         }
 
@@ -126,7 +127,7 @@ class CreateArticleActionsManager
                     "description" => $description,
                 ]);
             } catch (\Exception $e) {
-                // TODO: add log to import
+                Log::error("Не удалось создать текстовый блок для статьи {$article->id}: " . $e->getMessage());
                 continue;
             }
             $blocks[] = $block;
@@ -138,7 +139,7 @@ class CreateArticleActionsManager
     {
         if (empty($pageData["insideImages"]) && empty($pageData["galleryImages"])) { return null; }
         if (empty(config("article-pages.blockTypesList")["gallery"])) {
-            // TODO: add log to import
+            Log::error("В конфигурации article-pages не задан блок gallery");
             return null;
         }
         $imageArray = [];
@@ -150,7 +151,7 @@ class CreateArticleActionsManager
                 "type" => "gallery",
             ]);
         } catch (\Exception $e) {
-            // TODO: add log to import
+            Log::error("Не удалось создать блок галерея для статьи {$article->id}: " . $e->getMessage());
             return null;
         }
         /**
@@ -163,7 +164,7 @@ class CreateArticleActionsManager
             if (! empty($image)) {
                 $galleryBlock->storeGalleryImageDirectly($image);
             } else {
-                // TODO: add log to import
+                Log::error("Не удалось добавить изображение в галерею для статьи {$article->id} по адресу {$imageUrl}");
             }
         }
 

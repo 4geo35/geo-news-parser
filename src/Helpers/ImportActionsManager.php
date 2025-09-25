@@ -2,6 +2,7 @@
 
 namespace GIS\GeoNewsParser\Helpers;
 
+use GIS\GeoNewsParser\Events\ArticleImportCompleted;
 use GIS\GeoNewsParser\Facades\ParserActions;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use GIS\GeoNewsParser\Jobs\ProcessClearArticles;
@@ -9,6 +10,7 @@ use GIS\GeoNewsParser\Jobs\ProcessPageMetas;
 use GIS\GeoNewsParser\Jobs\ProcessPaginationPage;
 use GIS\GeoNewsParser\Models\GeoImport;
 use Illuminate\Bus\Batch;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 
 class ImportActionsManager
@@ -74,9 +76,7 @@ class ImportActionsManager
 
         $batch = Bus::batch($jobsArray)
             ->finally(function (Batch $batch) use ($import) {
-                $import->update([
-                    "finished_at" => now(),
-                ]);
+                ArticleImportCompleted::dispatch($import);
             })->name("Import geo news")->dispatch();
 
         $import->update([

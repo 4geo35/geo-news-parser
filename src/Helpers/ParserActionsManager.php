@@ -10,10 +10,8 @@ use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
-// TODO: add html to markdown to composer
 use League\HTMLToMarkdown\HtmlConverter;
 
 class ParserActionsManager
@@ -50,7 +48,7 @@ class ParserActionsManager
     public function getPagesUrls(GeoImportInterface $import, string $paginatorUrl): array|string
     {
         $response = $this->getUrlResponse($import->url, $paginatorUrl);
-        if ($response->getStatusCode() !== 200) { return "Can not find paginator url $paginatorUrl"; }
+        if ($response->getStatusCode() !== 200) { return "Не найден адрес страницы $paginatorUrl"; }
         $content = $response->getBody()->getContents();
         libxml_use_internal_errors(true);
         $document = new DOMDocument();
@@ -88,7 +86,7 @@ class ParserActionsManager
                 ];
             }
         } else {
-            // TODO push error to log
+            Log::error("Для {$paginatorUrl} не найдены страницы");
         }
 
         return $pagesData;
@@ -96,10 +94,10 @@ class ParserActionsManager
 
     public function getPageData(GeoImportInterface $import, array $pageInfo): array|string
     {
-        if (empty($pageInfo["url"])) { return "Can not find page url"; }
+        if (empty($pageInfo["url"])) { return "Не найден адрес страницы"; }
         $url = $pageInfo["url"];
         $response = $this->getUrlResponse($import->url, $url);
-        if ($response->getStatusCode() !== 200) { return "Can not find news page url {$url}"; }
+        if ($response->getStatusCode() !== 200) { return "Не далось получить данные со страницы {$url}"; }
         $content = $response->getBody()->getContents();
 
         libxml_use_internal_errors(true);

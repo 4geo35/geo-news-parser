@@ -22,7 +22,7 @@
         @endif
         @if ($import->finished_at)
             <li class="flex justify-between space-x-2">
-                <span class="font-semibold">Закончен:</span> <span>{{ $import->started_human }}</span>
+                <span class="font-semibold">Закончен:</span> <span>{{ $import->finished_human }}</span>
             </li>
         @endif
     </ul>

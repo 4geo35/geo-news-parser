@@ -13,7 +13,8 @@
         "4geo35/tailwindcss-theme": "@dev",
         "4geo35/user-management": "@dev",
         "4geo35/article-pages": "@dev",
-        "4geo35/traits-helpers": "@dev"
+        "4geo35/traits-helpers": "@dev",
+        "league/html-to-markdown": "^5.1"
     },
     "autoload": {
         "psr-4": {

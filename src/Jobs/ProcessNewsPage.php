@@ -8,6 +8,7 @@ use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 
 class ProcessNewsPage implements ShouldQueue
 {
@@ -31,6 +32,10 @@ class ProcessNewsPage implements ShouldQueue
         }
         $data = $this->data;
         $pageData = ParserActions::getPageData($this->import, $data);
+        if (is_string($pageData)) {
+            Log::error($pageData);
+            return;
+        }
 
         $article = CreateArticleActions::create($this->import, $pageData);
         if (!$article) { return; }
