@@ -10,10 +10,10 @@
         }
     ],
     "require": {
-        "4geo35/tailwindcss-theme": "@dev",
-        "4geo35/user-management": "@dev",
-        "4geo35/article-pages": "@dev",
-        "4geo35/traits-helpers": "@dev",
+        "4geo35/tailwindcss-theme": "^1.3",
+        "4geo35/user-management": "^1.0",
+        "4geo35/article-pages": "^1.0",
+        "4geo35/traits-helpers": "^1.1",
         "league/html-to-markdown": "^5.1"
     },
     "autoload": {
