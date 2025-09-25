@@ -5,10 +5,46 @@ namespace GIS\GeoNewsParser\Helpers;
 use GIS\ArticlePages\Interfaces\ArticleModelInterface;
 use GIS\ArticlePages\Models\Article;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
+use GIS\Metable\Facades\MetaActions;
+use GIS\Metable\Models\Meta;
 use Illuminate\Http\UploadedFile;
 
 class CreateArticleActionsManager
 {
+    public function setPageMetas(GeoImportInterface $import, array $metaData): ?array
+    {
+        $page = config("article-pages.pagePrefix");
+        if (empty($page)) { return null; }
+        $currentMetas = MetaActions::getByPage($page);
+        if (! empty($currentMetas)) {
+            foreach ($currentMetas as $currentMeta) {
+                $currentMeta->delete();
+            }
+        }
+
+        $metaModelClass = config("metable.customMetaModel") ?? Meta::class;
+        $metas = [];
+        foreach ($metaData as $key => $item) {
+            if (empty($item)) { continue; }
+            if (is_array($item) && count($item) >=1) {
+                $value = $item[0];
+            } elseif (is_string($item)) {
+                $value = $item;
+            } else { continue; }
+            try {
+                $metas[] = $metaModelClass::create([
+                    "page" => $page,
+                    "name" => $key,
+                    "content" => $value,
+                ]);
+            } catch (\Exception $e) {
+                // TODO: add log to import
+            }
+        }
+
+        return $metas;
+    }
+
     public function create(GeoImportInterface $import, array $pageData): ?ArticleModelInterface
     {
         $articleModelClass = config("article-pages.customArticleModel") ?? Article::class;
@@ -42,6 +78,37 @@ class CreateArticleActionsManager
         return $article;
     }
 
+    public function addMetas(GeoImportInterface $import, ArticleModelInterface $article, array $pageData): ?array
+    {
+        if (empty($pageData["meta"])) { return null; }
+
+        $currentMetas = $article->metas()->get();
+        foreach ($currentMetas as $meta) {
+            $meta->delete();
+        }
+
+        $metas = [];
+        foreach ($pageData["meta"] as $key => $item) {
+            if (empty($item)) { continue; }
+            if (is_array($item) && count($item) >=1) {
+                $value = $item[0];
+            } elseif (is_string($item)) {
+                $value = $item;
+            } else { continue; }
+
+            try {
+                $metas[] = $article->metas()->create([
+                    "name" => $key,
+                    "content" => $value,
+                ]);
+            } catch (\Exception $e) {
+                // TODO: add log to import
+            }
+        }
+
+        return $metas;
+    }
+
     public function addDescription(GeoImportInterface $import, ArticleModelInterface $article, array $pageData): ?array
     {
         if (empty($pageData["description"])) { return null; }
@@ -66,7 +133,7 @@ class CreateArticleActionsManager
         return $blocks;
     }
 
-    public function getUploadedFile(string $url): ?UploadedFile
+    protected function getUploadedFile(string $url): ?UploadedFile
     {
         if (empty($url)) { return null; }
         try {

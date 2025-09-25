@@ -37,6 +37,9 @@ class ProcessNewsPage implements ShouldQueue
         $article = CreateArticleActions::create($this->import, $pageData);
         if (!$article) { return; }
 
+        CreateArticleActions::addMetas($this->import, $article, $pageData);
         CreateArticleActions::addDescription($this->import, $article, $pageData);
+
+        // TODO: add gallery
     }
 }
