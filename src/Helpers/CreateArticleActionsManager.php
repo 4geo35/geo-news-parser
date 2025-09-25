@@ -2,6 +2,7 @@
 
 namespace GIS\GeoNewsParser\Helpers;
 
+use GIS\ArticlePages\Interfaces\ArticleBlockModelInterface;
 use GIS\ArticlePages\Interfaces\ArticleModelInterface;
 use GIS\ArticlePages\Models\Article;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
@@ -131,6 +132,42 @@ class CreateArticleActionsManager
             $blocks[] = $block;
         }
         return $blocks;
+    }
+
+    public function addGallery(GeoImportInterface $import, ArticleModelInterface $article, array $pageData): ?ArticleBlockModelInterface
+    {
+        if (empty($pageData["insideImages"]) && empty($pageData["galleryImages"])) { return null; }
+        if (empty(config("article-pages.blockTypesList")["gallery"])) {
+            // TODO: add log to import
+            return null;
+        }
+        $imageArray = [];
+        if (!empty($pageData["galleryImages"])) { $imageArray = array_merge($imageArray, $pageData["galleryImages"]); }
+        elseif (!empty($pageData["insideImages"])) { $imageArray = array_merge($imageArray, $pageData["insideImages"]); }
+
+        try {
+            $galleryBlock = $article->blocks()->create([
+                "type" => "gallery",
+            ]);
+        } catch (\Exception $e) {
+            // TODO: add log to import
+            return null;
+        }
+        /**
+         * @var ArticleBlockModelInterface $galleryBlock
+         */
+
+        foreach ($imageArray as $item) {
+            $imageUrl = is_array($item) ? $item["url"] : $item;
+            $image = $this->getUploadedFile($imageUrl);
+            if (! empty($image)) {
+                $galleryBlock->storeGalleryImageDirectly($image);
+            } else {
+                // TODO: add log to import
+            }
+        }
+
+        return $galleryBlock;
     }
 
     protected function getUploadedFile(string $url): ?UploadedFile

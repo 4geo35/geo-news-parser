@@ -2,8 +2,6 @@
 
 namespace GIS\GeoNewsParser\Jobs;
 
-use GIS\ArticlePages\Interfaces\ArticleModelInterface;
-use GIS\ArticlePages\Models\Article;
 use GIS\GeoNewsParser\Facades\CreateArticleActions;
 use GIS\GeoNewsParser\Facades\ParserActions;
 use GIS\GeoNewsParser\Interfaces\GeoImportInterface;
@@ -39,7 +37,6 @@ class ProcessNewsPage implements ShouldQueue
 
         CreateArticleActions::addMetas($this->import, $article, $pageData);
         CreateArticleActions::addDescription($this->import, $article, $pageData);
-
-        // TODO: add gallery
+        CreateArticleActions::addGallery($this->import, $article, $pageData);
     }
 }

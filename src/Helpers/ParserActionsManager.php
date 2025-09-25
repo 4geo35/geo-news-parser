@@ -136,7 +136,7 @@ class ParserActionsManager
         // Gallery images
         $galleryImages = $xPath->query($settings->galleryImageUrls);
         $galleryImageUrls = $this->getGalleryImages($galleryImages, $document, $settings);
-        $galleryImageUrls = $this->clearDouble($mainImage, $insideImageUrls, $galleryImageUrls);
+        $insideImageUrls = $this->clearDouble($insideImageUrls, $galleryImageUrls);
 
         $pageInfo["description"] = $fullDescription;
         $pageInfo["title"] = $textTitle;
@@ -337,15 +337,12 @@ class ParserActionsManager
         return $imageData;
     }
 
-    protected function clearDouble(array $mainImage = null, array $insideImages = [], array $galleryImages = []): array
+    protected function clearDouble(array $insideImages = [], array $galleryImages = []): array
     {
-        if (! $mainImage) { return $galleryImages; }
-
-        $insideCollection = collect($insideImages);
+        $galleryCollection = collect($galleryImages);
         $cleared = [];
-        foreach ($galleryImages as $image) {
-            if ($mainImage && ($image["url"] === $mainImage["url"])) { continue; }
-            $result = $insideCollection->first(function (array $value, int $key) use ($image) {
+        foreach ($insideImages as $image) {
+            $result = $galleryCollection->first(function (array $value, int $key) use ($image) {
                 return $value["url"] === $image["url"];
             });
             if ($result) { continue; }
