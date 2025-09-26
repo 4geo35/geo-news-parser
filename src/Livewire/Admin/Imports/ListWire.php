@@ -67,6 +67,7 @@ class ListWire extends Component
 
     public function updatedFullPage($value): void
     {
+        if (empty($value)) { return; }
         list($url, $page, $paginator, $lastPage) = ImportActions::splitFullUrl($value);
         if (empty($this->url)) { $this->url = $url; }
         if (empty($this->page)) { $this->page = $page; }
