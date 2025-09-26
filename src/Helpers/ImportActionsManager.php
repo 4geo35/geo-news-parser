@@ -19,7 +19,7 @@ class ImportActionsManager
     {
         $splitted = parse_url($url);
         if (empty($splitted["path"]) || empty($splitted["scheme"]) || empty($splitted["host"])) {
-            return ["", "", "", ""];
+            return ["", "", "", 1];
         }
         $path = $splitted['path'];
         $exploded = array_values(array_filter(explode('/', $path)));
