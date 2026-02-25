@@ -17,25 +17,30 @@ use GIS\GeoNewsParser\Livewire\Admin\Imports\ProgressWire as ImportProgressWire;
 
 class GeoNewsParserServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->loadMigrationsFrom(__DIR__ . "/database/migrations");
+
+        $this->mergeConfigFrom(__DIR__ . "/config/geo-news-parser.php", "geo-news-parser");
+
+        $this->initFacades();
+    }
+
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__ . "/resources/views", "gnp");
-        $this->addLivewireComponents();
-        $this->setPolicies();
+
+        $this->loadRoutesFrom(__DIR__ . "/routes/admin.php");
+
         $this->expandConfiguration();
+        $this->setPolicies();
+        
+        $this->addLivewireComponents();
 
         Event::listen(
             ArticleImportCompleted::class,
             SetFinishedDateToImport::class
         );
-    }
-
-    public function register(): void
-    {
-        $this->loadMigrationsFrom(__DIR__ . "/database/migrations");
-        $this->mergeConfigFrom(__DIR__ . "/config/geo-news-parser.php", "geo-news-parser");
-        $this->loadRoutesFrom(__DIR__ . "/routes/admin.php");
-        $this->initFacades();
     }
 
     protected function addLivewireComponents(): void
