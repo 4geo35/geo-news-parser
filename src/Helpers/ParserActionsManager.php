@@ -70,12 +70,12 @@ class ParserActionsManager
 
                 if ($shortTexts->length > 0) {
                     $shortText = $shortTexts->item($i);
-                    $pageShort = $this->getPageShort($shortText);
+                    $pageShort = $shortText ? $this->getPageShort($shortText) : null;
                 } else { $pageShort = null; }
 
                 if ($imageUrls->length > 0) {
                     $imageUrl = $imageUrls->item($i);
-                    $pageImageUrl = $this->getPageImage($imageUrl);
+                    $pageImageUrl = $imageUrl ? $this->getPageImage($imageUrl) : null;
                 } else { $pageImageUrl = null; }
 
                 $pagesData[] = [
