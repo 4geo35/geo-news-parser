@@ -62,6 +62,15 @@ class ParserActionsManager
         $shortTexts = $xPath->evaluate($settings->shortText);
         $imageUrls = $xPath->evaluate($settings->imageUrl);
 
+        if ($pageLinks->length !== $shortTexts->length) {
+            Log::error("На странице {$paginatorUrl} количество страниц не соответствует количеству описаний");
+            return [];
+        }
+        if ($pageLinks->length !== $imageUrls->length) {
+            Log::error("На странице {$paginatorUrl} количество страниц не соответствует количеству изображений");
+            return [];
+        }
+
         $pagesData = [];
         if ($pageLinks->length > 0) {
             for ($i = 0; $i < $pageLinks->length; $i++) {
