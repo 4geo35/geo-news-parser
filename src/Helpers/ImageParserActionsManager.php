@@ -13,6 +13,7 @@ class ImageParserActionsManager
 
     public function getImageSize(string $link): int
     {
+        if (config("geo-news-parser.disallowImages")) { return 0; }
         try {
             $headers = get_headers($link, 1);
         } catch (\Exception $e) {
@@ -35,6 +36,7 @@ class ImageParserActionsManager
 
     public function isImage(string $link): bool
     {
+        if (config("geo-news-parser.disallowImages")) { return false; }
         $ext = pathinfo($link, PATHINFO_EXTENSION);
         $ext = explode("?", $ext)[0];
         if (! in_array($ext, self::IMAGE_EXTENSIONS)) { return false; }

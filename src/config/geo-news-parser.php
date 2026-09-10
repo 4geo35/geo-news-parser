@@ -1,6 +1,9 @@
 <?php
 
 return [
+    // Settings
+    "disallowImages" => false,
+
     // Admin
     "customAdminImportController" => null,
     "customGeoImportModel" => null,

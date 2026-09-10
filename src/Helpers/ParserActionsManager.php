@@ -198,6 +198,7 @@ class ParserActionsManager
 
     protected function getPageImage(\DOMAttr $data): ?string
     {
+        if (config("geo-news-parser.disallowImages")) { return null; }
         $link = $data->textContent;
         if (empty($link)) { return null; }
         return $link;
@@ -264,6 +265,7 @@ class ParserActionsManager
 
     protected function getInsideImages(DOMNodeList $data, \DOMDocument $document): array
     {
+        if (config("geo-news-parser.disallowImages")) { return [null, null]; }
         if ($data->length === 0) { return [null, null]; }
 
         $foundImages = [];
@@ -307,6 +309,7 @@ class ParserActionsManager
 
     protected function getGalleryImages(DOMNodeList $data, \DOMDocument $document, object $settings): ?array
     {
+        if (config("geo-news-parser.disallowImages")) { return null; }
         if ($data->length === 0) { return null; }
 
         $foundLinks = [];
