@@ -4,15 +4,19 @@ return [
     // Settings
     "disallowImages" => false,
 
-    // Admin
-    "customAdminImportController" => null,
+    // Models
     "customGeoImportModel" => null,
 
+    // Controllers
+    "customAdminImportController" => null,
+
+    // Facades
     "customImportActionsManager" => null,
     "customParserActionsManager" => null,
     "customImageParserActionsManager" => null,
     "customCreateArticleActionsManager" => null,
 
+    // Wire Components
     "customImportListComponent" => null,
     "customImportProgressComponent" => null,
 
