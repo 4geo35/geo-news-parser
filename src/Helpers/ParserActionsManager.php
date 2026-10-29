@@ -60,13 +60,13 @@ class ParserActionsManager
         // Search pages
         $pageLinks = $xPath->evaluate($settings->titleUrl);
         $shortTexts = $xPath->evaluate($settings->shortText);
-        $imageUrls = $xPath->evaluate($settings->imageUrl);
+        if (! config("geo-news-parser.disallowImages")) { $imageUrls = $xPath->evaluate($settings->imageUrl); }
 
         if ($pageLinks->length !== $shortTexts->length) {
             Log::error("На странице {$paginatorUrl} количество страниц не соответствует количеству описаний");
             return [];
         }
-        if ($pageLinks->length !== $imageUrls->length) {
+        if (! config("geo-news-parser.disallowImages") && ($pageLinks->length !== $imageUrls->length)) {
             Log::error("На странице {$paginatorUrl} количество страниц не соответствует количеству изображений");
             return [];
         }
@@ -82,7 +82,7 @@ class ParserActionsManager
                     $pageShort = $shortText ? $this->getPageShort($shortText) : null;
                 } else { $pageShort = null; }
 
-                if ($imageUrls->length > 0) {
+                if (! config("geo-news-parser.disallowImages") && ($imageUrls->length > 0)) {
                     $imageUrl = $imageUrls->item($i);
                     $pageImageUrl = $imageUrl ? $this->getPageImage($imageUrl) : null;
                 } else { $pageImageUrl = null; }
@@ -143,7 +143,7 @@ class ParserActionsManager
         // Gallery images
         $galleryImages = $xPath->query($settings->galleryImageUrls);
         $galleryImageUrls = $this->getGalleryImages($galleryImages, $document, $settings);
-        $insideImageUrls = $this->clearDouble($insideImageUrls, $galleryImageUrls);
+        if ($insideImageUrls) { $insideImageUrls = $this->clearDouble($insideImageUrls, $galleryImageUrls); }
 
         $pageInfo["description"] = $fullDescription;
         $pageInfo["title"] = $textTitle;

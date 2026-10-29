@@ -50,12 +50,14 @@ class CreateArticleActionsManager
     public function create(GeoImportInterface $import, array $pageData): ?ArticleModelInterface
     {
         $articleModelClass = config("article-pages.customArticleModel") ?? Article::class;
+//        if (strlen($pageData["short"]) > 250) { $pageData["short"] = substr($pageData["short"], 0, 250); }
+        if (strlen($pageData["short"]) > 250) { $pageData["short"] = ""; }
 
         try {
             $article = $articleModelClass::create([
                 "title" => $pageData['title'] ?? "Заголовок не определен",
                 "slug" => $pageData['slug'],
-                "short" => $pageData['short'] ?? "",
+//                "short" => $pageData['short'] ?? "",
                 "published_at" => $pageData["createdDate"] ?? "",
             ]);
         } catch (\Exception $e) {
